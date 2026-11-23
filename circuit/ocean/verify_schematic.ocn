@@ -1,0 +1,12 @@
+verifyPort=outfile("/home/userone/codex_ocean/verify_schematic.txt" "w")
+libObj=ddGetObj("codex_fc_ota")
+cv=dbOpenCellViewByType("codex_fc_ota" "folded_cascode_ota" "schematic" "" "r")
+if(libObj && cv then
+  fprintf(verifyPort "SCHEMATIC_OK INSTANCES=%d NETS=%d TERMS=%d\n"
+    length(cv~>instances) length(cv~>nets) length(cv~>terminals))
+  dbClose(cv)
+else
+  fprintf(verifyPort "SCHEMATIC_FAILED\n")
+)
+close(verifyPort)
+exit()

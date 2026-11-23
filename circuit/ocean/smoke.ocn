@@ -1,0 +1,5 @@
+smokePort=outfile("/home/userone/codex_ocean/ocean_smoke.ok" "w")
+fprintf(smokePort "CODEX_OCEAN_OK\n")
+close(smokePort)
+printf("CODEX_OCEAN_OK\n")
+exit()

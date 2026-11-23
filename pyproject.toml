@@ -1,0 +1,10 @@
+[project]
+name = "virtuoso-folded-cascode-automation"
+version = "1.0.0"
+description = "Remote Virtuoso/OCEAN/Spectre automation for a folded-cascode OTA"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.unittest]
+start-directory = "tests"
+

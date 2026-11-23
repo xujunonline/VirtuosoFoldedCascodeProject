@@ -1,0 +1,25 @@
+.secrets/*
+!.secrets/README.md
+**/__pycache__/
+*.pyc
+results/generated/
+*.log.tmp
+
+# Commercial/restricted PDK-derived material stays local.
+pdk/*
+!pdk/README.md
+
+# Local simulator logs can expose licensed installation details.
+results/runs/**/spectre.stdout.log
+results/runs/**/spectre.stderr.log
+
+# Conversation archives contain user- and machine-specific history.
+docs/Codex完整聊天记录_*
+
+# Local editor/OS files.
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.tmp/
+

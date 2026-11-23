@@ -1,0 +1,114 @@
+procedure(fcFindMasterTerm(instId termName)
+  car(setof(masterTerm instId~>master~>terminals masterTerm~>name==termName))
+)
+
+procedure(fcConnect(instId netId termName)
+  let((masterTerm)
+    masterTerm=fcFindMasterTerm(instId termName)
+    unless(masterTerm
+      error("Missing terminal %s on %s\n" termName instId~>name)
+    )
+    dbCreateInstTerm(netId instId masterTerm)
+  )
+)
+
+procedure(fcSetMosParams(instId width length fingers)
+  dbCreateProp(instId "w" "string" width)
+  dbCreateProp(instId "Wfg" "string" width)
+  dbCreateProp(instId "l" "string" length)
+  dbCreateProp(instId "nf" "string" fingers)
+  dbCreateProp(instId "fingers" "string" fingers)
+)
+
+procedure(fcCreateMos(cv master cellName origin orient width length fingers connections)
+  let((instId)
+    instId=dbCreateInst(cv master cellName origin orient)
+    fcSetMosParams(instId width length fingers)
+    foreach(connection connections
+      fcConnect(instId dbFindNetByName(cv cadr(connection)) car(connection))
+    )
+    instId
+  )
+)
+
+reportPort=outfile("/home/userone/codex_ocean/create_schematic_report.txt" "w")
+libName="codex_fc_ota"
+libPath="/home/userone/codex_fc_ota"
+cellName="folded_cascode_ota"
+
+libObj=ddGetObj(libName)
+unless(libObj
+  libObj=ddCreateLib(libName libPath)
+)
+unless(libObj
+  error("Unable to create library %s\n" libName)
+)
+
+cv=dbOpenCellViewByType(libName cellName "schematic" "schematic" "w")
+unless(cv
+  error("Unable to open schematic cellview\n")
+)
+
+nchMaster=dbOpenCellViewByType("tsmcN40" "nch" "symbol" "" "r")
+pchMaster=dbOpenCellViewByType("tsmcN40" "pch" "symbol" "" "r")
+unless(nchMaster error("Unable to open tsmcN40/nch/symbol\n"))
+unless(pchMaster error("Unable to open tsmcN40/pch/symbol\n"))
+
+netNames=list("VDD" "VSS" "VINP" "VINN" "VBP" "VBN" "VCASN" "VBPL" "VPCAS"
+  "VSRC" "XFP" "XFN" "ZP" "ZN" "OUTP" "OUTN")
+foreach(netName netNames
+  dbCreateNet(cv netName)
+)
+
+foreach(pinSpec list(
+    list("VDD" "inputOutput") list("VSS" "inputOutput")
+    list("VINP" "input") list("VINN" "input")
+    list("VBP" "input") list("VBN" "input") list("VCASN" "input")
+    list("VBPL" "input") list("VPCAS" "input")
+    list("OUTP" "output") list("OUTN" "output"))
+  dbCreateTerm(dbFindNetByName(cv car(pinSpec)) car(pinSpec) cadr(pinSpec))
+)
+
+fcCreateMos(cv pchMaster "MTAIL" 0:8 "R0" "20u" "480n" "4"
+  list(list("D" "VSRC") list("G" "VBP") list("S" "VDD") list("B" "VDD")))
+fcCreateMos(cv pchMaster "MINP" -2:6 "R0" "40u" "400n" "6"
+  list(list("D" "XFP") list("G" "VINP") list("S" "VSRC") list("B" "VDD")))
+fcCreateMos(cv pchMaster "MINN" 2:6 "R0" "40u" "400n" "6"
+  list(list("D" "XFN") list("G" "VINN") list("S" "VSRC") list("B" "VDD")))
+
+fcCreateMos(cv nchMaster "MSINKP" -4:0 "R0" "10u" "480n" "2"
+  list(list("D" "XFP") list("G" "VBN") list("S" "VSS") list("B" "VSS")))
+fcCreateMos(cv nchMaster "MSINKN" 4:0 "R0" "10u" "480n" "2"
+  list(list("D" "XFN") list("G" "VBN") list("S" "VSS") list("B" "VSS")))
+fcCreateMos(cv nchMaster "MFOLDP" -2:3 "R0" "20u" "480n" "4"
+  list(list("D" "OUTP") list("G" "VCASN") list("S" "XFP") list("B" "VSS")))
+fcCreateMos(cv nchMaster "MFOLDN" 2:3 "R0" "20u" "480n" "4"
+  list(list("D" "OUTN") list("G" "VCASN") list("S" "XFN") list("B" "VSS")))
+
+fcCreateMos(cv pchMaster "MLOADP" -4:10 "R0" "20u" "640n" "4"
+  list(list("D" "ZP") list("G" "VBPL") list("S" "VDD") list("B" "VDD")))
+fcCreateMos(cv pchMaster "MLOADN" 4:10 "R0" "20u" "640n" "4"
+  list(list("D" "ZN") list("G" "VBPL") list("S" "VDD") list("B" "VDD")))
+fcCreateMos(cv pchMaster "MCASP" -4:6 "R0" "20u" "480n" "4"
+  list(list("D" "OUTP") list("G" "VPCAS") list("S" "ZP") list("B" "VDD")))
+fcCreateMos(cv pchMaster "MCASN" 4:6 "R0" "20u" "480n" "4"
+  list(list("D" "OUTN") list("G" "VPCAS") list("S" "ZN") list("B" "VDD")))
+
+dbSave(cv)
+fprintf(reportPort "LIB %s PATH %s\n" libName libPath)
+fprintf(reportPort "CELL %s VIEW schematic\n" cellName)
+fprintf(reportPort "INSTANCES %d\n" length(cv~>instances))
+foreach(instId cv~>instances
+  fprintf(reportPort "INST %s MASTER %s W %L L %L NF %L\n"
+    instId~>name instId~>master~>cellName instId~>w instId~>l instId~>nf)
+)
+fprintf(reportPort "NETS %d\n" length(cv~>nets))
+foreach(netId cv~>nets
+  fprintf(reportPort "NET %s INSTTERMS %d TERMS %d\n"
+    netId~>name length(netId~>instTerms) length(netId~>terms))
+)
+close(reportPort)
+dbClose(cv)
+dbClose(nchMaster)
+dbClose(pchMaster)
+exit()

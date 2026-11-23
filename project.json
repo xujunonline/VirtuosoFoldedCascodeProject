@@ -1,0 +1,33 @@
+{
+  "name": "VirtuosoFoldedCascodeProject",
+  "version": "1.0.0",
+  "created": "2026-07-19",
+  "guest": {
+    "host": "192.168.44.128",
+    "user": "userone",
+    "ocean": "/opt/eda/cadence/IC251/tools/dfII/bin/ocean",
+    "spectre": "/opt/eda/cadence/SPECTRE251/bin/spectre",
+    "virtuoso": "/opt/eda/cadence/IC251/tools/dfII/bin/virtuoso",
+    "display": ":1",
+    "xauthority": "/run/user/1000/gdm/Xauthority"
+  },
+  "pdk": {
+    "name": "TSMC40nm CRN40LP",
+    "library": "tsmcN40",
+    "corner": "top_tt",
+    "supply_v": 1.1
+  },
+  "virtuoso_design": {
+    "library": "codex_fc_ota",
+    "cell": "folded_cascode_ota",
+    "view": "schematic"
+  },
+  "best_result": {
+    "gain_db": 36.92654462772063,
+    "ugf_hz": 25468581.541049983,
+    "phase_margin_deg": 89.35452937460028,
+    "out_dc_v": 0.5536746910897031,
+    "supply_current_a": 0.00006600279546759655
+  }
+}
+

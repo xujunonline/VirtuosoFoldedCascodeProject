@@ -1,0 +1,31 @@
+simulator lang=spectre
+global 0
+
+include "/PDKS/TSMC40nm/models/spectre/toplevel.scs" section=top_tt
+
+parameters VDDVAL=1.1 VCM=0.55 VBP=0.62 VBN=0.48 VCASN=0.78
+parameters WIN=12u LIN=80n WTAIL=8u LTAIL=120n
+parameters WFOLD=8u LFOLD=100n WSINK=4u LSINK=120n
+parameters WLOAD=8u LLOAD=120n CLOAD=1p
+
+VDD (vdd 0) vsource dc=VDDVAL
+VBP_SRC (vbp 0) vsource dc=VBP
+VBN_SRC (vbn 0) vsource dc=VBN
+VCASN_SRC (vcasn 0) vsource dc=VCASN
+VINP (vinp 0) vsource dc=VCM mag=0.5 phase=0
+VINN (vinn 0) vsource dc=VCM mag=0.5 phase=180
+
+MTAIL (vsrc vbp vdd vdd) pch w=WTAIL l=LTAIL nf=4
+MINP  (xfp vinp vsrc vdd) pch w=WIN l=LIN nf=6
+MINN  (xfn vinn vsrc vdd) pch w=WIN l=LIN nf=6
+MSINKP (xfp vbn 0 0) nch w=WSINK l=LSINK nf=2
+MSINKN (xfn vbn 0 0) nch w=WSINK l=LSINK nf=2
+MFOLDP (ym vcasn xfp 0) nch w=WFOLD l=LFOLD nf=4
+MFOLDN (out vcasn xfn 0) nch w=WFOLD l=LFOLD nf=4
+MLOADD (ym ym vdd vdd) pch w=WLOAD l=LLOAD nf=4
+MLOADO (out ym vdd vdd) pch w=WLOAD l=LLOAD nf=4
+CLOAD0 (out 0) capacitor c=CLOAD
+
+saveOptions options save=allpub
+dcOp dc write="dcOp"
+ac ac start=1 stop=100G dec=50

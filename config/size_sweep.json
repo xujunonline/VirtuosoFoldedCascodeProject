@@ -1,0 +1,38 @@
+[
+  {
+    "name": "baseline",
+    "WIN": "12u", "LIN": "80n", "WTAIL": "8u", "LTAIL": "120n",
+    "WFOLD": "8u", "LFOLD": "100n", "WSINK": "4u", "LSINK": "120n",
+    "WLOAD": "8u", "LLOAD": "120n"
+  },
+  {
+    "name": "long_160n",
+    "WIN": "12u", "LIN": "160n", "WTAIL": "8u", "LTAIL": "160n",
+    "WFOLD": "8u", "LFOLD": "160n", "WSINK": "4u", "LSINK": "160n",
+    "WLOAD": "8u", "LLOAD": "160n"
+  },
+  {
+    "name": "long_240n",
+    "WIN": "12u", "LIN": "240n", "WTAIL": "8u", "LTAIL": "240n",
+    "WFOLD": "8u", "LFOLD": "240n", "WSINK": "4u", "LSINK": "240n",
+    "WLOAD": "8u", "LLOAD": "240n"
+  },
+  {
+    "name": "gm_boost",
+    "WIN": "24u", "LIN": "120n", "WTAIL": "12u", "LTAIL": "160n",
+    "WFOLD": "12u", "LFOLD": "160n", "WSINK": "6u", "LSINK": "160n",
+    "WLOAD": "12u", "LLOAD": "160n"
+  },
+  {
+    "name": "gm_boost_long",
+    "WIN": "24u", "LIN": "240n", "WTAIL": "12u", "LTAIL": "240n",
+    "WFOLD": "12u", "LFOLD": "240n", "WSINK": "6u", "LSINK": "240n",
+    "WLOAD": "12u", "LLOAD": "240n"
+  },
+  {
+    "name": "high_ro_load",
+    "WIN": "20u", "LIN": "200n", "WTAIL": "10u", "LTAIL": "240n",
+    "WFOLD": "10u", "LFOLD": "240n", "WSINK": "5u", "LSINK": "240n",
+    "WLOAD": "10u", "LLOAD": "320n"
+  }
+]

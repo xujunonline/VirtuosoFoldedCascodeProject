@@ -1,0 +1,36 @@
+simulator lang=spectre
+global 0
+
+include "/PDKS/TSMC40nm/models/spectre/toplevel.scs" section=top_tt
+
+parameters VDDVAL=1.1 VCM=0.55 VCMOUT=0.55 VBP=0.62 VBN=0.48 VCASN=0.78 VBPL0=0.552 VPCAS=0.45 ACMFB=1
+parameters WIN=30u LIN=300n WTAIL=15u LTAIL=360n
+parameters WFOLD=15u LFOLD=360n WSINK=7.5u LSINK=360n
+parameters WLOAD=15u LLOAD=480n WPCAS=15u LPCAS=360n CLOAD=1p
+
+VDD (vdd 0) vsource dc=VDDVAL
+VBP_SRC (vbp 0) vsource dc=VBP
+VBN_SRC (vbn 0) vsource dc=VBN
+VCASN_SRC (vcasn 0) vsource dc=VCASN
+VPCAS_SRC (vpcas 0) vsource dc=VPCAS
+VINP (vinp 0) vsource dc=VCM mag=0.5 phase=0
+VINN (vinn 0) vsource dc=VCM mag=0.5 phase=180
+BCMFB (vbpl 0) bsource v=VBPL0+ACMFB*((v(out)+v(ym))/2-VCMOUT)
+
+MTAIL (vsrc vbp vdd vdd) pch w=WTAIL l=LTAIL nf=4
+MINP  (xfp vinp vsrc vdd) pch w=WIN l=LIN nf=6
+MINN  (xfn vinn vsrc vdd) pch w=WIN l=LIN nf=6
+MSINKP (xfp vbn 0 0) nch w=WSINK l=LSINK nf=2
+MSINKN (xfn vbn 0 0) nch w=WSINK l=LSINK nf=2
+MFOLDP (ym vcasn xfp 0) nch w=WFOLD l=LFOLD nf=4
+MFOLDN (out vcasn xfn 0) nch w=WFOLD l=LFOLD nf=4
+MLOADP (zp vbpl vdd vdd) pch w=WLOAD l=LLOAD nf=4
+MLOADN (zn vbpl vdd vdd) pch w=WLOAD l=LLOAD nf=4
+MCASP (ym vpcas zp vdd) pch w=WPCAS l=LPCAS nf=4
+MCASN (out vpcas zn vdd) pch w=WPCAS l=LPCAS nf=4
+CLOADP (ym 0) capacitor c=CLOAD
+CLOADN (out 0) capacitor c=CLOAD
+
+saveOptions options save=allpub
+dcOp dc write="dcOp"
+ac ac start=1 stop=100G dec=50
